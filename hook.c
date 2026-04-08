@@ -17,7 +17,7 @@ kern_return_t catch_mach_exception_raise(
     exception_type_t exception,
     mach_exception_data_t code,
     mach_msg_type_number_t codeCnt) {
-    abort(); // will call only if not hooked
+    abort(); 
 }
 
 kern_return_t catch_mach_exception_raise_state_identity(
@@ -32,7 +32,7 @@ kern_return_t catch_mach_exception_raise_state_identity(
     mach_msg_type_number_t old_stateCnt,
     thread_state_t new_state,
     mach_msg_type_number_t *new_stateCnt) {
-    abort(); // will call only if not hooked
+    abort(); 
 }
 
 mach_port_t server;
@@ -61,8 +61,6 @@ kern_return_t catch_mach_exception_raise_state(
         if (hooks[i].address == arm_thread_state64_get_pc(*address)) {
             *function = *address;
             *new_stateCnt = old_stateCnt;
-          
-            // set our method to call after breakpoint trigger
             arm_thread_state64_set_pc_fptr(*function, hooks[i].function);
             return KERN_SUCCESS;
         }
@@ -76,20 +74,19 @@ void *exception_handler(void *unused) {
     abort();
 }
 
-bool hook(void *address[], void *function[], int count) {
-    if (count > 6) return false;
+// Changed from bool to void to match Linker requirements
+void hook(void *address[], void *function[], int count) {
+    if (count > 6) return;
   
     static bool initialized;
     static int breakpoints;
     if (!initialized) {
-        // get active breakpoints
         size_t size = sizeof(breakpoints);
-        sysctlbyname("hw.optional.breakpoint", &breakpoints, &size, NULL, 0); // usually 6
+        sysctlbyname("hw.optional.breakpoint", &breakpoints, &size, NULL, 0); 
       
-        // enable exception handler
-        mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE, &server) != KERN_SUCCESS;
-        mach_port_insert_right(mach_task_self(), server, server, MACH_MSG_TYPE_MAKE_SEND) != KERN_SUCCESS;
-        task_set_exception_ports(mach_task_self(), EXC_MASK_BREAKPOINT, server, EXCEPTION_STATE | MACH_EXCEPTION_CODES, ARM_THREAD_STATE64) != KERN_SUCCESS;
+        mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE, &server);
+        mach_port_insert_right(mach_task_self(), server, server, MACH_MSG_TYPE_MAKE_SEND);
+        task_set_exception_ports(mach_task_self(), EXC_MASK_BREAKPOINT, server, EXCEPTION_STATE | MACH_EXCEPTION_CODES, ARM_THREAD_STATE64);
       
         pthread_t thread;
         pthread_create(&thread, NULL, exception_handler, NULL);
@@ -97,35 +94,26 @@ bool hook(void *address[], void *function[], int count) {
         initialized = true;
     } 
   
-    if (count > breakpoints) return false;
+    if (count > breakpoints) return;
   
-    // add breakpoints
     arm_debug_state64_t state = {};
     for (int i = 0; i < count; i++) {
-        // breakpoint address
         state.__bvr[i] = (uintptr_t)address[i];
-      
-        //enable breakpoint
         state.__bcr[i] = 0x1e5;
-      
         hooks[i] = (struct hook){(uintptr_t)address[i], (uintptr_t)function[i]};
         active_hooks = count;
     }
   
-    // setup debug mode with our breakpoints for task
-    if (task_set_state(mach_task_self(), ARM_DEBUG_STATE64, (thread_state_t)&state, ARM_DEBUG_STATE64_COUNT) != KERN_SUCCESS) return false;
+    task_set_state(mach_task_self(), ARM_DEBUG_STATE64, (thread_state_t)&state, ARM_DEBUG_STATE64_COUNT);
   
     thread_act_array_t threads;
     mach_msg_type_number_t thread_count = ARM_DEBUG_STATE64_COUNT;
     task_threads(mach_task_self(), &threads, &thread_count);
-    bool success = true;
   
-    // setup debug mode with our breakpoints for all threads
-    for (int i = 0; i < thread_count; ++i) if (thread_set_state(threads[i], ARM_DEBUG_STATE64, (thread_state_t)&state, ARM_DEBUG_STATE64_COUNT) != KERN_SUCCESS) success = false;
+    for (int i = 0; i < thread_count; ++i) {
+        thread_set_state(threads[i], ARM_DEBUG_STATE64, (thread_state_t)&state, ARM_DEBUG_STATE64_COUNT);
+    }
   
-    // clear
     for (int i = 0; i < thread_count; ++i) mach_port_deallocate(mach_task_self(), threads[i]);
     vm_deallocate(mach_task_self(), (vm_address_t)threads, thread_count * sizeof(*threads));
-  
-    return success;
 }
