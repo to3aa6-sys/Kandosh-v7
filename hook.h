@@ -8,11 +8,11 @@
 extern "C" {
 #endif
 
-bool hook(void *address[], void *function[], int count);
+// Fixed: Changed return type to void to match the call in ImGuiDrawView.mm
+void hook(void *address[], void *function[], int count);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* hook_h */
-
