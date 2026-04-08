@@ -17,10 +17,10 @@
 #import "ImGuiDrawView.h"
 #import "LoadView.h"
 #import "FTNotificationIndicator.h"
-#import "../imgui/imgui.h"
-#import "../imgui/imgui_internal.h"
-#import "../imgui/imgui_impl_metal.h"
-#include "Security/Obfuscate.h"
+#import "imgui.h"
+#import "imgui_internal.h"
+#import "imgui_impl_metal.h"
+#include "Obfuscate.h"
 
 #define kWidth  [UIScreen mainScreen].bounds.size.width
 #define kHeight [UIScreen mainScreen].bounds.size.height
