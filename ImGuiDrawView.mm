@@ -13,6 +13,11 @@
 #include "Icon.h"
 #include "iconcpp.h"
 
+// التعريفات الخارجية عشان تحل مشكلة undeclared identifier
+extern void (*_LateUpdate)(void *instance);
+extern void (*_Update)(void *instance);
+extern void (*DamageInfoHook)(void *instance, void *damageInfo);
+
 ImFont *_espFont;
 #import "Esp.h"
 #include "AimKill.cpp"
