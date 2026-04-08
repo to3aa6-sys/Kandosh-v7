@@ -13,15 +13,15 @@
 #include "Icon.h"
 #include "iconcpp.h"
 
-bool MenDeal = true;
-bool aimStart = false;
-float AimFov = 90.0f;
-bool ESPEnable = false;
-bool ESPLine = false;
+extern bool MenDeal;
+extern bool aimStart;
+extern float AimFov;
+extern bool ESPEnable;
+extern bool ESPLine;
 
 extern void (*_LateUpdate)(void *instance);
 extern void (*_Update)(void *instance);
-extern void (*DamageInfoHook)(void *instance, void *damageInfo);
+extern void DamageInfoHook(void* Player); 
 
 ImFont *_espFont;
 #import "Esp.h"
