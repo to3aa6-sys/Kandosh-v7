@@ -8,8 +8,11 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = KandoshV7
 
-KandoshV7_CCFLAGS = -std=c++11 -fno-rtti -fno-exceptions -DNDEBUG -I. -I./LoadView -I./Security -I./imgui -I./Utils -I./Other -I./hook -Wno-error -Wno-implicit-function-declaration
-KandoshV7_FILES = ImGuiDrawView.mm $(wildcard *.mm) $(wildcard Security/*.mm) $(wildcard LoadView/*.mm) $(wildcard imgui/*.cpp) $(wildcard Utils/*.mm) $(wildcard Other/*.mm) $(wildcard hook/*.mm)
+KandoshV7_CCFLAGS = -std=c++11 -fno-rtti -fno-exceptions -DNDEBUG \
+                    -I. -I./LoadView -I./Security -I./imgui -I./Utils -I./Other -I./hook -I./drawEsp \
+                    -Wno-error -Wno-implicit-function-declaration
+
+KandoshV7_FILES = ImGuiDrawView.mm $(wildcard *.mm) $(wildcard Security/*.mm) $(wildcard LoadView/*.mm) $(wildcard imgui/*.cpp) $(wildcard Utils/*.mm) $(wildcard Other/*.mm) $(wildcard hook/*.mm) $(wildcard drawEsp/*.mm)
 KandoshV7_FRAMEWORKS = UIKit Foundation Security QuartzCore CoreGraphics CoreText
 
 include $(THEOS_MAKE_PATH)/tweak.mk
