@@ -1,8 +1,8 @@
 #include <UIKit/UIKit.h>
 #import <vector>
 #import <string>
-#import "../MethodObfuscation.h"
-#import "../../Security/oxorany/oxorany_include.h"
+#import "MethodObfuscation.h"
+#import "oxorany_include.h"
 
 #define IM_PI 3.14159265358979323846f
 #define RAD2DEG(x) ((float)(x) * (float)(180.f / IM_PI))
@@ -11,7 +11,6 @@
 #define kHeight [UIScreen mainScreen].bounds.size.height
 
 using namespace std;
-
 
 std::string string_format(const std::string &fmt, ...) {
     std::vector<char> str(100,'\0');
@@ -30,9 +29,3 @@ std::string string_format(const std::string &fmt, ...) {
     }
     return str.data();
 }
-
-
-
-
-
-
