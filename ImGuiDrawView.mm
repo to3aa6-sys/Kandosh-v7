@@ -13,7 +13,12 @@
 #include "Icon.h"
 #include "iconcpp.h"
 
-// التعريفات الخارجية عشان تحل مشكلة undeclared identifier
+bool MenDeal = true;
+bool aimStart = false;
+float AimFov = 90.0f;
+bool ESPEnable = false;
+bool ESPLine = false;
+
 extern void (*_LateUpdate)(void *instance);
 extern void (*_Update)(void *instance);
 extern void (*DamageInfoHook)(void *instance, void *damageInfo);
