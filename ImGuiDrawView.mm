@@ -13,6 +13,10 @@
 #include "Icon.h"
 #include "iconcpp.h"
 
+// Fix for Linker Error: Ensures the hook function is recognized correctly
+extern "C" void hook(void *address[], void *function[], int count);
+
+// Use extern to prevent redefinition errors with variables in Esp.h and AimKill.cpp
 extern bool MenDeal;
 extern bool aimStart;
 extern float AimFov;
@@ -70,6 +74,7 @@ void hooking() {
         (void*)_Update
     };
     
+    // Calls the external C function
     hook(address, function, 4);
 
     get_transform = (void *(*)(void *))getRealOffset(ENCRYPTOFFSET("0x4A3BAB4")); 
